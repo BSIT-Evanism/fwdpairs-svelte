@@ -38,9 +38,14 @@
 	},
 	"dependencies": {
 		"@prisma/client": "5.21.1",
+		"@types/bun": "^1.1.12",
 		"better-auth": "^0.5.4-beta.6",
+		"clsx": "^2.1.1",
 		"lucide-svelte": "^0.453.0",
 		"prisma": "^5.21.1",
+		"tailwind-merge": "^2.5.4",
+		"tailwind-variants": "^0.2.1",
 		"valibot": "^0.42.1"
-	}
+	},
+	"packageManager": "pnpm@9.0.6+sha1.648f6014eb363abb36618f2ba59282a9eeb3e879"
 }

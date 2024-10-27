@@ -1,93 +1,276 @@
 <script lang="ts">
-    import {HeartCrack} from  'lucide-svelte'
-    const { data } = $props();
+	import { HeartCrack } from 'lucide-svelte';
+	import { cubicInOut } from 'svelte/easing';
+	import { crossfade, fade, fly } from 'svelte/transition';
+	import { createTagsInput, melt } from '@melt-ui/svelte';
+	import { X } from 'lucide-svelte';
+	import * as v from 'valibot';
+	import MainToast from '$lib/components/MainToast/MainToast.svelte';
+	const { data } = $props();
 
+	let mainToast: MainToast;
 
-    let step = $state(1)
-    let name = $state("")
-    let nickname = $state("")
-    let age = $state(0)
-    let gender = $state<"male" | "female" | "non-binary" | "prefer not to say">("prefer not to say")
-    let missing = $state<string[]>([])
+	const UserDetailsSchema = v.object({
+		name: v.pipe(v.string(), v.minLength(1, 'name is required')),
+		nickname: v.pipe(v.string(), v.minLength(1, 'nickname is required')),
+		age: v.pipe(
+			v.number(),
+			v.minValue(18, 'age must be at least 18'),
+			v.maxValue(100, 'age must be at most 100')
+		),
+		gender: v.picklist(['male', 'female', 'non-binary', 'prefer not to say']),
+		topics: v.pipe(v.array(v.string()), v.minLength(1, 'at least one topic is required'))
+	});
 
-    function updateMissing() {
-        const newMissing = [];
-        if (!name) newMissing.push("Name");
-        if (!nickname) newMissing.push("Nickname");
-        if (!gender) newMissing.push("Gender");
-        missing = newMissing;
-    }
+	const {
+		elements: { root, input, tag, deleteTrigger, edit },
+		states: { tags }
+	} = createTagsInput({
+		defaultTags: [],
+		allowed: ['Foodtrip', 'Travel', 'Music', 'Art', 'Fashion', 'Beauty', 'Fitness', 'DIY'],
+		unique: true,
+		add(tag) {
+			return { id: tag, value: tag };
+		},
+		addOnPaste: true
+	});
 
-    $effect(() => {
-        updateMissing()
-    })
+	let step = $state(1);
+	let name = $state('');
+	let nickname = $state('');
+	let age = $state(0);
+	let gender = $state<'male' | 'female' | 'non-binary' | 'prefer not to say'>('prefer not to say');
+	let missing = $state<string[]>([]);
+	let error = $state<string | null>(null);
+	function updateMissing() {
+		const newMissing = [];
+		if (!name) newMissing.push('Name');
+		if (!nickname) newMissing.push('Nickname');
+		if (!age) newMissing.push('Age');
+		if (!gender) newMissing.push('Gender');
+		if ($tags.length === 0) newMissing.push('Topics');
+		missing = newMissing;
+	}
+
+	$effect(() => {
+		updateMissing();
+	});
+
+	function submitData() {
+		const result = v.safeParse(UserDetailsSchema, {
+			name,
+			nickname,
+			age,
+			gender,
+			topics: $tags
+		});
+		if (result.success) {
+			console.log(result.output);
+		} else {
+			console.log(result.issues);
+			error = result.issues.map((issue) => issue.message).join(', ');
+			mainToast.createNewToast({
+				title: 'Error',
+				description: error,
+				color: 'bg-red-500'
+			});
+		}
+	}
 </script>
 
 {#snippet step1({ name }: { name: string })}
-        <div class="p-2">
-            <h1 class="text-4xl font-bold">Good day, {name}</h1>
-            <h2>Let's get you started</h2>
-        </div>
-        <div
-            class="flex flex-col justify-center items-center h-80 w-full bg-slate-100 rounded-xl p-4 gap-4"
-        >
-            <button onclick={() => step++} class=" bg-pink-500 text-white p-2 rounded-md">
-                Continue
-            </button>
-        </div>
+	<div class="overflow-hidden">
+		<div class="p-2">
+			<h1 class="text-4xl font-bold">Good day, {name}</h1>
+			<h2>Let's get you started</h2>
+		</div>
+		<div
+			class="flex flex-col justify-center items-center h-80 w-full bg-slate-100 rounded-xl p-4 gap-4"
+		>
+			<button
+				onclick={() => step++}
+				class="w-full h-full text-xl hover:scale-105 transition-all duration-300 bg-pink-500 text-white p-2 rounded-md"
+			>
+				Continue
+			</button>
+		</div>
+	</div>
 {/snippet}
 
 {#snippet step2()}
-    <div class="p-2">
-        <h1 class="text-4xl font-bold">What would you like to be called?</h1>
-        <p>please enter your name and nickname</p>
-    </div>
-    <div class="flex flex-col justify-center items-center h-80 w-full bg-slate-100 rounded-xl p-4 gap-4">
-        <div class="flex flex-col gap-2 w-full">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" bind:value={name} class="w-full p-2 rounded-md" />
-        </div>
-        <div class="flex flex-col gap-2 w-full">
-            <label for="nickname">Nickname</label>
-            <input type="text" id="nickname" bind:value={nickname} class="w-full p-2 rounded-md" />
-        </div>
-        <button onclick={() => step++} class=" bg-pink-500 self-end text-white p-2 rounded-md">
-            Continue
-        </button>
-    </div>
+	<div class="overflow-hidden">
+		<div in:fly={{ y: -100 }} class="p-2">
+			<h1 class="text-4xl font-bold">What would you like to be called?</h1>
+			<p>please enter your name and nickname</p>
+		</div>
+		<div
+			in:fade
+			class="flex flex-col justify-center items-center h-80 w-full bg-slate-100 rounded-xl p-4 gap-4"
+		>
+			<div class="flex flex-col gap-2 w-full">
+				<label for="name">Full Name</label>
+				<input type="text" id="name" bind:value={name} class="w-full p-2 rounded-md" />
+			</div>
+			<div class="flex flex-col gap-2 w-full">
+				<label for="nickname">Nickname</label>
+				<input type="text" id="nickname" bind:value={nickname} class="w-full p-2 rounded-md" />
+			</div>
+			<button onclick={() => step++} class=" bg-pink-500 self-end text-white p-2 rounded-md">
+				Continue
+			</button>
+		</div>
+	</div>
 {/snippet}
 
 {#snippet step3()}
-    <div>Step 3</div>
+	<div class="overflow-hidden">
+		<div in:fly={{ y: -100 }} class="p-2">
+			<h1 class="text-4xl font-bold">This details would make us easier to match you with others</h1>
+			<p>Please input your age and gender</p>
+		</div>
+		<div
+			in:fade
+			class="flex flex-col justify-center items-center h-80 w-full bg-slate-100 rounded-xl p-4 gap-4"
+		>
+			<div class="flex flex-col gap-2 w-full">
+				<label for="age">Age</label>
+				<input type="number" bind:value={age} class="w-full p-2 rounded-md" />
+			</div>
+			<div class="flex flex-col gap-2 w-full">
+				<label for="gender">Gender</label>
+				<select bind:value={gender} class="w-full p-2 rounded-md">
+					<option value="male">Male</option>
+					<option value="female">Female</option>
+					<option value="non-binary">Non-binary</option>
+					<option value="prefer not to say">Prefer not to say</option>
+				</select>
+			</div>
+			<button onclick={() => step++} class=" bg-pink-500 self-end text-white p-2 rounded-md">
+				Continue
+			</button>
+		</div>
+	</div>
+{/snippet}
+
+{#snippet step4()}
+	<div class="overflow-hidden">
+		<div in:fly={{ y: -100 }} class="p-2">
+			<h1 class="text-4xl font-bold">What are you interested in?</h1>
+			<p>select up to 3 topics</p>
+		</div>
+		<div
+			in:fade
+			class="flex flex-col justify-center items-center h-80 w-full bg-slate-100 rounded-xl p-4 gap-4"
+		>
+			<div class="flex flex-col gap-4 w-full">
+				<div class="flex flex-wrap gap-2">
+					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Foodtrip</button>
+					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Travel</button>
+					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Music</button>
+					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Art</button>
+					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Fashion</button>
+					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Beauty</button>
+					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Fitness</button>
+					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">DIY</button>
+				</div>
+
+				<div
+					use:melt={$root}
+					class="flex min-w-[280px] flex-row flex-wrap gap-2.5 rounded-md bg-white px-3 py-2 text-magnum-700
+    focus-within:ring focus-within:ring-magnum-400"
+				>
+					{#each $tags as t}
+						<div
+							use:melt={$tag(t)}
+							class="flex items-center overflow-hidden rounded-md bg-magnum-200 text-magnum-900 [word-break:break-word]
+      data-[disabled]:bg-magnum-300 data-[selected]:bg-magnum-400 data-[disabled]:hover:cursor-default
+        data-[disabled]:focus:!outline-none data-[disabled]:focus:!ring-0"
+						>
+							<span class="flex items-center border-r border-white/10 px-1.5">{t.value}</span>
+							<button
+								use:melt={$deleteTrigger(t)}
+								class="flex h-full items-center px-1 enabled:hover:bg-magnum-300"
+							>
+								<X class="size-3" />
+							</button>
+						</div>
+						<div
+							use:melt={$edit(t)}
+							class="flex items-center overflow-hidden rounded-md px-1.5 [word-break:break-word] data-[invalid-edit]:focus:!ring-red-500"
+						></div>
+					{/each}
+
+					<input
+						use:melt={$input}
+						type="text"
+						placeholder="Enter tags..."
+						class="min-w-[4.5rem] shrink grow basis-0 border-0 text-black outline-none focus:!ring-0 data-[invalid]:text-red-500"
+					/>
+					<button onclick={() => step++} class="bg-pink-500 text-white p-2 rounded-md">
+						Continue
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{/snippet}
+
+{#snippet final()}
+	<div class="overflow-hidden">
+		<div class="p-2">
+			<h1 class="text-4xl font-bold">You good with these info?</h1>
+			<p>Please confirm your information</p>
+			<div class="flex flex-col gap-2 w-full">
+				<p>Name: {name}</p>
+				<p>Nickname: {nickname}</p>
+				<p>Age: {age}</p>
+				<p>Gender: {gender}</p>
+				<p>Topics: {JSON.stringify($tags)}</p>
+			</div>
+			<button onclick={() => submitData()} class=" bg-pink-500 self-end text-white p-2 rounded-md">
+				Continue
+			</button>
+		</div>
+	</div>
 {/snippet}
 
 {#snippet missingInputs({ missing }: { missing: string[] })}
-    <div class={`flex flex-col gap-2 absolute top-5 justify-center items-center bg-white border-2 border-pink-200 rounded-xl p-4 -z-10  w-32 h-32 shadow-lg transition-all duration-300 ${missing.length > 0 ? '-left-[120px]' : 'left-0'}`}>
-        <HeartCrack class="w-10 h-10 text-pink-500" />
-        <p>{missing.length} missing fields</p>
-    </div>
+	<div
+		transition:fade
+		class={`flex flex-col gap-2 absolute top-5 justify-center items-center bg-white border-2 border-pink-200 rounded-xl p-4 -z-10  w-32 h-32 shadow-lg transition-all duration-300 ${missing.length > 0 ? '-left-[120px]' : 'left-0'}`}
+	>
+		<HeartCrack class="w-10 h-10 text-pink-500" />
+		<p>{missing.length} missing fields</p>
+	</div>
 {/snippet}
-
+<div
+	class="bg-gradient-to-br from-pink-300 to-white border-2 border-pink-100 fixed inset-0 -z-10"
+></div>
 <div class="page flex flex-col items-center justify-center">
-    <div
-        class="w-full max-w-2xl h-full min-h-96 bg-white border-2 border-pink-200 rounded-3xl relative p-10 shadow-lg"
-    >
-        {@render missingInputs({ missing })}
-        {#if step === 1}
-            {@render step1({name: data.name})}
-        {:else if step === 2}
-            {@render step2()}
-        {:else if step === 3}
-            {@render step3()}
-        {/if}
-    </div>
+	<MainToast bind:this={mainToast} />
+	<div
+		class="w-full max-w-2xl h-full min-h-96 bg-white border-2 border-pink-200 rounded-3xl relative p-10 shadow-lg"
+	>
+		{@render missingInputs({ missing })}
+		{#if step === 1}
+			{@render step1({ name: data.name })}
+		{:else if step === 2}
+			{@render step2()}
+		{:else if step === 3}
+			{@render step3()}
+		{:else if step === 4}
+			{@render step4()}
+		{:else if step === 5}
+			{@render final()}
+		{/if}
+		{#if error}
+			<p class="text-red-500">{error}</p>
+		{/if}
+	</div>
 </div>
 
-
-
-
 <style>
-    .page {
-        min-height: 100vh;
-    }
+	.page {
+		min-height: 100vh;
+	}
 </style>

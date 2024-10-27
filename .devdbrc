@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "/Users/swe-evan/repos/newsvelte/prisma/db.sqlite"
+  }
+]
