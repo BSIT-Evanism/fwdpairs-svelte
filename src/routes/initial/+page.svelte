@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { HeartCrack } from 'lucide-svelte';
+	import { HeartCrack, ArrowLeft, ArrowRight, Loader2Icon } from 'lucide-svelte';
 	import { cubicInOut } from 'svelte/easing';
 	import { crossfade, fade, fly } from 'svelte/transition';
 	import { createTagsInput, melt } from '@melt-ui/svelte';
@@ -42,6 +42,9 @@
 	let gender = $state<'male' | 'female' | 'non-binary' | 'prefer not to say'>('prefer not to say');
 	let missing = $state<string[]>([]);
 	let error = $state<string | null>(null);
+	let confirm = $state(false);
+	let loading = $state(false);
+
 	function updateMissing() {
 		const newMissing = [];
 		if (!name) newMissing.push('Name');
@@ -62,10 +65,12 @@
 			nickname,
 			age,
 			gender,
-			topics: $tags
+			topics: $tags.map((t) => t.value)
 		});
 		if (result.success) {
 			console.log(result.output);
+			error = '';
+			confirm = true;
 		} else {
 			console.log(result.issues);
 			error = result.issues.map((issue) => issue.message).join(', ');
@@ -75,6 +80,47 @@
 				color: 'bg-red-500'
 			});
 		}
+	}
+
+	async function confirmData() {
+		const result = v.safeParse(UserDetailsSchema, {
+			name,
+			nickname,
+			age,
+			gender,
+			topics: $tags.map((t) => t.value)
+		});
+		loading = true;
+
+		if (!result.success) {
+			loading = false;
+			error = result.issues.map((issue) => issue.message).join(', ');
+			mainToast.createNewToast({
+				title: 'Error',
+				description: error,
+				color: 'bg-red-500'
+			});
+			return;
+		}
+
+		const data = new FormData();
+		data.append('name', name);
+		data.append('nickname', nickname);
+		data.append('age', age.toString());
+		data.append('gender', gender);
+		data.append('topics', $tags.map((t) => t.value).join(','));
+
+		const response = await fetch('?/details', {
+			method: 'POST',
+			body: data
+		});
+		mainToast.createNewToast({
+			title: 'Success',
+			description: 'nice to meet you!',
+			color: 'bg-green-200'
+		});
+		loading = false;
+		confirm = false;
 	}
 </script>
 
@@ -163,15 +209,63 @@
 			class="flex flex-col justify-center items-center h-80 w-full bg-slate-100 rounded-xl p-4 gap-4"
 		>
 			<div class="flex flex-col gap-4 w-full">
-				<div class="flex flex-wrap gap-2">
-					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Foodtrip</button>
-					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Travel</button>
-					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Music</button>
-					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Art</button>
-					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Fashion</button>
-					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Beauty</button>
-					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">Fitness</button>
-					<button class="px-3 py-1 rounded-md bg-magnum-200 hover:bg-magnum-300">DIY</button>
+				<div class="grid grid-cols-3 gap-2">
+					<button
+						onclick={() => ($tags = [...$tags, { value: 'Foodtrip', id: 'Foodtrip' }])}
+						disabled={$tags.some((tag) => tag.value === 'Foodtrip')}
+						class="px-3 py-1 rounded-md bg-magnum-300 disabled:bg-magnum-200"
+					>
+						Foodtrip
+					</button>
+					<button
+						onclick={() => ($tags = [...$tags, { value: 'Travel', id: 'Travel' }])}
+						disabled={$tags.some((tag) => tag.value === 'Travel')}
+						class="px-3 py-1 rounded-md bg-magnum-300 disabled:bg-magnum-200"
+					>
+						Travel
+					</button>
+					<button
+						onclick={() => ($tags = [...$tags, { value: 'Music', id: 'Music' }])}
+						disabled={$tags.some((tag) => tag.value === 'Music')}
+						class="px-3 py-1 rounded-md bg-magnum-300 disabled:bg-magnum-200"
+					>
+						Music
+					</button>
+					<button
+						onclick={() => ($tags = [...$tags, { value: 'Art', id: 'Art' }])}
+						disabled={$tags.some((tag) => tag.value === 'Art')}
+						class="px-3 py-1 rounded-md bg-magnum-300 disabled:bg-magnum-200"
+					>
+						Art
+					</button>
+					<button
+						onclick={() => ($tags = [...$tags, { value: 'Fashion', id: 'Fashion' }])}
+						disabled={$tags.some((tag) => tag.value === 'Fashion')}
+						class="px-3 py-1 rounded-md bg-magnum-300 disabled:bg-magnum-200"
+					>
+						Fashion
+					</button>
+					<button
+						onclick={() => ($tags = [...$tags, { value: 'Beauty', id: 'Beauty' }])}
+						disabled={$tags.some((tag) => tag.value === 'Beauty')}
+						class="px-3 py-1 rounded-md bg-magnum-300 disabled:bg-magnum-200"
+					>
+						Beauty
+					</button>
+					<button
+						onclick={() => ($tags = [...$tags, { value: 'Fitness', id: 'Fitness' }])}
+						disabled={$tags.some((tag) => tag.value === 'Fitness')}
+						class="px-3 py-1 rounded-md bg-magnum-300 disabled:bg-magnum-200"
+					>
+						Fitness
+					</button>
+					<button
+						onclick={() => ($tags = [...$tags, { value: 'DIY', id: 'DIY' }])}
+						disabled={$tags.some((tag) => tag.value === 'DIY')}
+						class="px-3 py-1 rounded-md bg-magnum-300 disabled:bg-magnum-200"
+					>
+						DIY
+					</button>
 				</div>
 
 				<div
@@ -220,16 +314,37 @@
 		<div class="p-2">
 			<h1 class="text-4xl font-bold">You good with these info?</h1>
 			<p>Please confirm your information</p>
-			<div class="flex flex-col gap-2 w-full">
+			<div class="flex flex-col bg-slate-100 p-4 rounded-md gap-2 w-full">
 				<p>Name: {name}</p>
 				<p>Nickname: {nickname}</p>
 				<p>Age: {age}</p>
 				<p>Gender: {gender}</p>
-				<p>Topics: {JSON.stringify($tags)}</p>
+				<p class="flex flex-wrap gap-2">
+					Topics:
+					{#each $tags as t}
+						<span class="bg-magnum-200 p-1 w-20 text-center rounded-md">{t.value}</span>
+					{/each}
+				</p>
 			</div>
-			<button onclick={() => submitData()} class=" bg-pink-500 self-end text-white p-2 rounded-md">
-				Continue
-			</button>
+			{#if !confirm}
+				<button
+					onclick={() => submitData()}
+					class=" bg-pink-500 mt-2 self-end text-white p-2 rounded-md"
+				>
+					Continue
+				</button>
+			{:else}
+				<button
+					onclick={() => confirmData()}
+					disabled={loading}
+					class=" bg-blue-300 mt-2 self-end text-white p-2 rounded-md flex items-center gap-2"
+				>
+					Confirm?
+					{#if loading}
+						<Loader2Icon class="w-4 h-4 animate-spin" />
+					{/if}
+				</button>
+			{/if}
 		</div>
 	</div>
 {/snippet}
@@ -251,6 +366,14 @@
 	<div
 		class="w-full max-w-2xl h-full min-h-96 bg-white border-2 border-pink-200 rounded-3xl relative p-10 shadow-lg"
 	>
+		<div>
+			<button onclick={() => step >= 2 && step--} aria-label="goback-1">
+				<ArrowLeft class="w-4 h-4" />
+			</button>
+			<button onclick={() => step <= 4 && step++} aria-label="forward-1">
+				<ArrowRight class="w-4 h-4" />
+			</button>
+		</div>
 		{@render missingInputs({ missing })}
 		{#if step === 1}
 			{@render step1({ name: data.name })}
@@ -264,7 +387,7 @@
 			{@render final()}
 		{/if}
 		{#if error}
-			<p class="text-red-500">{error}</p>
+			<p class="text-red-500 bg-red-100 p-2 rounded-md mt-2">{error}</p>
 		{/if}
 	</div>
 </div>

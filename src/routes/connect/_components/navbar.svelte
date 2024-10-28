@@ -2,7 +2,9 @@
 	import { Heart, MessageCircle, User, Settings } from 'lucide-svelte';
 </script>
 
-<nav class="bg-pink-500 p-4 shadow-md">
+<nav
+	class="bg-pink-500 p-4 shadow-md absolute top-0 left-0 w-1/2 z-10 rounded-br-xl mx-auto self-start"
+>
 	<div class="container mx-auto flex justify-between items-center">
 		<a href="/connect" class="text-white text-2xl font-bold">LoveConnect</a>
 		<div class="space-x-4 flex items-center gap-2">

@@ -41,7 +41,7 @@
 >
 	<div
 		use:melt={$progress}
-		class="absolute left-5 top-2 h-1 w-[20%] overflow-hidden rounded-full bg-pink-200"
+		class="absolute left-4 top-2 h-0.5 w-[20%] overflow-hidden rounded-full bg-pink-200"
 	>
 		<div
 			class="h-full w-full bg-pink-400"
@@ -50,22 +50,22 @@
 	</div>
 
 	<div
-		class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5 pt-7"
+		class="relative flex w-[20rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-3 p-4 pt-6"
 	>
 		<div>
-			<h3 use:melt={$title(id)} class="flex items-center gap-2 font-bold text-pink-600">
+			<h3 use:melt={$title(id)} class="flex items-center gap-2 font-bold text-pink-600 text-sm">
 				{data.title}
 			</h3>
-			<div use:melt={$description(id)} class="text-pink-700">
+			<div use:melt={$description(id)} class="text-pink-700 text-sm">
 				{data.description}
 			</div>
 		</div>
 		<button
 			use:melt={$close(id)}
-			class="absolute right-4 top-4 grid size-7 place-items-center rounded-full text-pink-500
+			class="absolute right-3 top-3 grid size-6 place-items-center rounded-full text-pink-500
           hover:bg-pink-200 transition-colors duration-200"
 		>
-			<X class="size-5" />
+			<X class="size-4" />
 		</button>
 	</div>
 </div>

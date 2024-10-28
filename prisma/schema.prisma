@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -27,6 +28,19 @@ model UserDetails {
   updatedAt DateTime @updatedAt
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
+  nickname  String
+  age       Int
+  gender    String
+  topics    Topics[]
+}
+
+model Topics {
+  id        Int      @id @default(autoincrement())
+  topic      String
+  userDetails UserDetails @relation(fields: [userDetailsId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  userDetailsId String
+
+  @@unique([topic, userDetailsId])
 }
 
 model User {
