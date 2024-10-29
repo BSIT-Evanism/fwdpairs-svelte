@@ -1,25 +1,22 @@
 <script>
-  import Authcomp from "$lib/components/authcomp.svelte";
+	import Authcomp from '$lib/components/authcomp.svelte';
 </script>
 
 <div class="page flex flex-col items-center justify-center">
-  <Authcomp />
-  <div
-    class="bg-white rounded-3xl p-10 shadow-lg w-full max-w-2xl min-h-[20rem]"
-  >
-    <h1 class="text-4xl font-bold">Start the connection...</h1>
-    <p class="text-sm text-gray-500">
-      Meet new people, make new friends, and explore the world together.
-    </p>
-  </div>
+	<Authcomp />
+	<div
+		class="bg-pink-50 p-10 w-full max-w-2xl min-h-[20rem] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+	>
+		<h1 class="scroll-m-20 text-4xl font-black tracking-tight">Start the connection...</h1>
+		<p class="leading-7 [&:not(:first-child)]:mt-6 text-black">
+			Meet new people, make new friends, and explore the world together.
+		</p>
+	</div>
 </div>
 
 <style>
-  .page {
-    min-height: 100vh;
-    background:
-      linear-gradient(180deg, #fff0 0%, #ffff 100%),
-      conic-gradient(from 90deg at 1px 1px, #8880 90deg, #888f 0) center -1px / 50px
-        50px;
-  }
+	.page {
+		min-height: 100vh;
+		background: #ffcdd9;
+	}
 </style>

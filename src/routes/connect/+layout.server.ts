@@ -17,6 +17,9 @@ export const load: LayoutServerLoad = (async ({ request }) => {
 	const userDetails = await prisma.userDetails.findFirst({
 		where: {
 			userId: session.user.id
+		},
+		include: {
+			topics: true
 		}
 	});
 
@@ -24,7 +27,16 @@ export const load: LayoutServerLoad = (async ({ request }) => {
 		redirect(302, '/initial');
 	}
 
+	const googleAccount = await prisma.account.findFirst({
+		where: {
+			providerId: 'google',
+			userId: session.user.id
+		}
+	});
+
 	return {
-		session: session
+		session: session,
+		userDetails: userDetails,
+		hasLinkedGoogle: !!googleAccount
 	};
 }) satisfies LayoutServerLoad;

@@ -170,22 +170,27 @@
 	{#if $session.isPending}
 		<div>Loading...</div>
 	{:else if $session.data?.session}
-		<div>
+		<div class="flex gap-4">
 			<button
-				class="bg-pink-200 text-black px-4 py-2 rounded-full hover:bg-pink-300"
+				class="bg-white border-4 border-black text-black px-4 py-2 hover:translate-x-1 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
 				onclick={async () => await authClient.signOut()}
 			>
 				Sign out
 			</button>
 			<a href="/connect">
-				<button class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full">
+				<button
+					class="bg-[#FF90E8] border-4 border-black text-black px-4 py-2 hover:translate-x-1 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+				>
 					Start the connection...
 				</button>
 			</a>
 		</div>
 	{:else}
 		<div>
-			<button use:melt={$trigger} class="bg-blue-500 text-white px-4 py-2 rounded-full">
+			<button
+				use:melt={$trigger}
+				class="bg-[#FF90E8] border-4 border-black rounded-xl text-black px-4 py-2 hover:translate-x-1 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+			>
 				Sign in / Sign up
 			</button>
 			{#if $open}
@@ -195,20 +200,20 @@
 					transition:fade={{ duration: 200 }}
 				>
 					<div
-						class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw] max-w-[450px] -translate-x-1/2 -translate-y-1/2 rounded-xl p-6"
+						class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw] max-w-[450px] -translate-x-1/2 -translate-y-1/2 rounded-xl border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
 						use:melt={$content}
 						transition:fade={{ duration: 200 }}
 					>
 						<div
 							use:melt={$tabsroot}
 							class={cn(
-								'flex max-w-[25rem] flex-col overflow-hidden rounded-xl shadow-lg  data-[orientation=vertical]:flex-row',
+								'flex max-w-[25rem] flex-col overflow-hidden border-2 border-black rounded-xl',
 								className
 							)}
 						>
 							<div
 								use:melt={$tablist}
-								class="flex shrink-0 overflow-x-auto bg-neutral-100
+								class="flex shrink-0 overflow-x-auto bg-[#F1F1F1] border-b-4 border-black
     data-[orientation=vertical]:flex-col data-[orientation=vertical]:border-r"
 								aria-label="Manage your account"
 							>
@@ -219,17 +224,15 @@
 											<div
 												in:send={{ key: 'trigger' }}
 												out:receive={{ key: 'trigger' }}
-												class="absolute bottom-1 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-pink-400"
+												class="absolute bottom-1 left-1/2 h-1 w-6 -translate-x-1/2 bg-black"
 											></div>
 										{/if}
 									</button>
 								{/each}
 							</div>
 							<div use:melt={$tabcontent('signin')} class="grow bg-white p-5">
-								<h1 use:melt={$title} class="scroll-m-20 text-3xl font-semibold tracking-tight">
-									Sign in
-								</h1>
-								<p use:melt={$description} class="leading-7 [&:not(:first-child)]:mt-6">
+								<h1 use:melt={$title} class="text-3xl font-bold">Sign in</h1>
+								<p use:melt={$description} class="mt-4 font-mono">
 									Sign in to your account to continue.
 								</p>
 								<form
@@ -240,40 +243,67 @@
 									}}
 								>
 									<div>
-										<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+										<label for="email" class="block text-sm font-bold">Email</label>
 										<input
 											bind:value={email}
 											type="email"
 											id="email"
 											placeholder="Enter your email"
-											class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-magnum-500 focus:ring-magnum-500"
+											class="mt-1 block w-full border-2 border-black px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
 										/>
 									</div>
 									<div>
-										<label for="password" class="block text-sm font-medium text-gray-700"
-											>Password</label
-										>
+										<label for="password" class="block text-sm font-bold">Password</label>
 										<input
 											bind:value={password}
 											type="password"
 											id="password"
 											placeholder="Enter your password"
-											class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-magnum-500 focus:ring-magnum-500"
+											class="mt-1 block w-full border-2 border-black px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
 										/>
 									</div>
 									<button
 										type="submit"
-										class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+										class="w-full bg-[#FF90E8] border-4 border-black text-black py-2 px-4 font-bold hover:translate-x-1 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
 									>
 										Sign In
+									</button>
+									<button
+										type="button"
+										onclick={async () =>
+											await authClient.signIn.social({
+												provider: 'google'
+											})}
+										class="w-full mt-4 bg-[#93C5FD] border-4 border-black text-black py-2 px-4 font-bold hover:translate-x-1 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2"
+									>
+										Sign in with Google <svg
+											xmlns="http://www.w3.org/2000/svg"
+											x="0px"
+											y="0px"
+											width="20"
+											height="20"
+											viewBox="0 0 48 48"
+										>
+											<path
+												fill="#FFC107"
+												d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+											></path><path
+												fill="#FF3D00"
+												d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+											></path><path
+												fill="#4CAF50"
+												d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+											></path><path
+												fill="#1976D2"
+												d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+											></path>
+										</svg>
 									</button>
 								</form>
 							</div>
 							<div use:melt={$tabcontent('signup')} class="grow bg-white p-5">
-								<h1 use:melt={$title} class="scroll-m-20 text-3xl font-semibold tracking-tight">
-									Sign up
-								</h1>
-								<p use:melt={$description} class="leading-7 [&:not(:first-child)]:mt-6">
+								<h1 use:melt={$title} class="text-3xl font-bold">Sign up</h1>
+								<p use:melt={$description} class="mt-4 font-mono">
 									Sign up to your account to continue.
 								</p>
 								<form
@@ -284,74 +314,42 @@
 									}}
 								>
 									<div>
-										<label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+										<label for="name" class="block text-sm font-bold">Name</label>
 										<input
 											bind:value={name}
 											type="text"
 											id="name"
 											placeholder="Enter your name"
-											class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-magnum-500 focus:ring-magnum-500"
+											class="mt-1 block w-full border-2 border-black px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
 										/>
 									</div>
 									<div>
-										<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+										<label for="email" class="block text-sm font-bold">Email</label>
 										<input
 											bind:value={email}
 											type="email"
 											id="email"
 											placeholder="Enter your email"
-											class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+											class="mt-1 block w-full border-2 border-black px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
 										/>
 									</div>
 									<div>
-										<label for="password" class="block text-sm font-medium text-gray-700"
-											>Password</label
-										>
+										<label for="password" class="block text-sm font-bold">Password</label>
 										<input
 											bind:value={password}
 											type="password"
 											id="password"
 											placeholder="Enter your password"
-											class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+											class="mt-1 block w-full border-2 border-black px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
 										/>
 									</div>
 									<button
 										type="submit"
-										class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+										class="w-full bg-[#FF90E8] border-4 border-black text-black py-2 px-4 font-bold hover:translate-x-1 hover:-translate-y-1 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
 									>
-										Sign In
+										Sign Up
 									</button>
 								</form>
-								<button
-									onclick={async () =>
-										await authClient.signIn.social({
-											provider: 'google'
-										})}
-									class="w-full mt-2 py-2 flex items-center justify-center gap-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-								>
-									Sign in with Google <svg
-										xmlns="http://www.w3.org/2000/svg"
-										x="0px"
-										y="0px"
-										width="20"
-										height="20"
-										viewBox="0 0 48 48"
-									>
-										<path
-											fill="#FFC107"
-											d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-										></path><path
-											fill="#FF3D00"
-											d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
-										></path><path
-											fill="#4CAF50"
-											d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
-										></path><path
-											fill="#1976D2"
-											d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-										></path>
-									</svg>
-								</button>
 							</div>
 						</div>
 					</div>
@@ -361,124 +359,90 @@
 	{/if}
 {/snippet}
 
-<!-- {#snippet toast()}
-	<div
-		class="fixed right-0 top-0 z-50 m-4 flex flex-col items-end gap-2 md:bottom-0 md:top-auto"
-		use:portal
-	>
-		{#each $toasts as { id, data, getPercentage } (id)}
-			{@const percentage = getPercentage()}
-			<div
-				use:melt={$toastContent(id)}
-				animate:flip={{ duration: 500 }}
-				in:fly={{ duration: 150, x: '100%' }}
-				out:fly={{ duration: 150, x: '100%' }}
-				class="rounded-lg bg-neutral-800 text-white shadow-md"
-			>
-				<div
-					use:melt={$progress}
-					class="absolute left-5 top-2 h-1 w-[10%] overflow-hidden rounded-full bg-black/40"
-				>
-					<div
-						class="h-full w-full bg-magnum-500"
-						style={`transform: translateX(-${100 - (100 * percentage) / 100}%)`}
-					></div>
-				</div>
-				<div
-					class="relative flex w-[24rem] max-w-[calc(100vw-2rem)] items-center justify-between gap-4 p-5"
-				>
-					<div>
-						<h3 use:melt={$toastTitle(id)} class="flex items-center gap-2 font-semibold">
-							{data.title}
-							<span class="size-1.5 rounded-full {data.color}"></span>
-						</h3>
-						<div use:melt={$toastDescription(id)}>
-							{data.description}
-						</div>
-					</div>
-					<button
-						use:melt={$toastClose(id)}
-						class="absolute right-4 top-4 grid size-6 place-items-center rounded-full text-magnum-500
-          hover:bg-magnum-900/50"
-					>
-						<X class="size-4" />
-					</button>
-				</div>
-			</div>
-		{/each}
-	</div>
-{/snippet} -->
-
 <style lang="postcss">
 	.trigger {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-
-		cursor: default;
+		cursor: pointer;
 		user-select: none;
-
 		border-radius: 0;
 		background-color: theme(colors.neutral.100);
-
 		color: theme(colors.neutral.900);
-		font-weight: 500;
+		font-weight: 700;
 		line-height: 1;
-
 		flex: 1;
 		height: theme(spacing.12);
 		padding-inline: theme(spacing.2);
+		border-right: 2px solid black;
 
-		&:focus {
+		&:last-child {
+			border-right: none;
+		}
+
+		/* &:focus {
 			position: relative;
-		}
-
-		&:focus-visible {
-			@apply z-10 ring-2;
-		}
+			outline: 2px solid black;
+			outline-offset: -2px;
+		} */
 
 		&[data-state='active'] {
 			@apply focus:relative;
 			background-color: white;
-			color: theme('colors.pink.900');
+			color: black;
 		}
 	}
 
 	input {
-		height: theme(spacing.8);
+		height: theme(spacing.10);
 		flex-shrink: 0;
 		flex-grow: 1;
-		border-radius: theme(borderRadius.md);
-		border: 1px solid theme(colors.neutral.200);
+		border: 2px solid black;
 		padding-inline: theme(spacing[2.5]);
 		line-height: 1;
-		color: theme(colors.neutral.900);
+		color: black;
+		font-family: monospace;
+		border-radius: 0.75rem;
 
 		&:focus {
-			border-color: theme(colors.pink.400);
+			outline: none;
+			border-color: black;
+			box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+			border-radius: 0.75rem;
 		}
 	}
 
 	.save {
 		display: inline-flex;
-		height: theme(spacing.8);
-		cursor: default;
+		height: theme(spacing.10);
+		cursor: pointer;
 		align-items: center;
 		justify-content: center;
-		border-radius: theme(borderRadius.md);
-		background-color: theme(colors.pink.200);
+		background-color: theme(colors.white);
+		border: 2px solid black;
 		padding-inline: theme(spacing.4);
 		line-height: 1;
-		font-weight: theme(fontWeight.semibold);
-		color: theme(colors.pink.900);
-		@apply transition;
+		font-weight: 700;
+		color: black;
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
+		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
 
 		&:hover {
-			opacity: 0.75;
+			transform: translate(-2px, -2px);
+			box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
 		}
 
-		&:focus {
-			@apply !ring-green-600;
+		&:active {
+			transform: translate(0px, 0px);
+			box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
 		}
+	}
+
+	button {
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
 	}
 </style>
